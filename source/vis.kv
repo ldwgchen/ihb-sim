@@ -1,0 +1,147 @@
+<Node@Label>:
+    color_wrapper: 0, 0, 0, 0
+    color_dict: {'default': [0, 0, 1, 0.8], 'focus': [1, 1, 1, 1], 'upstream_sel': [0.5, 1, 0, 1]}
+    canvas.before:
+        Color:
+            rgba: self.color_wrapper
+        Ellipse:
+            size: self.size
+            pos: self.pos
+        Color:
+            rgba: 0.3, 0.3, 0, 0.5
+        Ellipse:
+            size: self.width/2, self.height/2
+            pos: self.x + self.width/4, self.y + self.height/4
+    score: 0
+    text: str(self.score)
+
+
+<Arrow@Label>:
+    color_wrapper: 0, 0, 0, 0
+    value: 0
+    color_dict: {-2: [0, 0, 1, 0.5], -1: [0, 0.5, 1, 0.5], 1: [1, 0.5, 0, 0.5], 2: [1, 0, 0, 0.5], 'focus': [1, 1, 1, 1]}
+    points_wrapper: 0, 0, 0, 0
+    canvas:
+        Color:
+            rgba: self.color_wrapper
+        Line:
+            width: 1.5
+            points: self.points_wrapper
+
+
+<AlignedLabel@Label>:
+    text_size: self.size
+    valign: 'top'
+    halign: 'left'
+
+
+<MainPanel@FloatLayout>:
+    canvas.before:
+        Color:
+            rgba: 0.8, 0.8, 0.8, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+
+<RightPanel@FloatLayout>:
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.8, 0.5, 0.8
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    Button:
+        id: point
+        background_color: 0.1, 0.6, 0.8, 1
+        size_hint: 0.5, 0.2
+        pos_hint: {'x': 0, 'y': 0.6}
+        text: 'POINT'
+        on_press: root.point_press()
+    Button:
+        id: plus_one
+        background_color: 1, 0.5, 0.8, 1
+        size_hint: 0.5, 0.2
+        pos_hint: {'x': 0, 'y': 0.4}
+        text: '+1'
+        on_press: root.plus_one_press()
+    Button:
+        id: plus_two
+        background_color: 1, 0.5, 0.8, 1
+        size_hint: 0.5, 0.2
+        pos_hint: {'x': 0.5, 'y': 0.4}
+        text: '+2'
+        on_press: root.plus_two_press()
+    Button:
+        id: minus_one
+        background_color: 0, 0, 1, 1
+        size_hint: 0.5, 0.2
+        pos_hint: {'x': 0, 'y': 0.2}
+        text: '-1'
+        on_press: root.minus_one_press()
+    Button:
+        id: minus_two
+        background_color: 0, 0, 1, 1
+        size_hint: 0.5, 0.2
+        pos_hint: {'x': 0.5, 'y': 0.2}
+        text: '-2'
+        on_press: root.minus_two_press()
+    Button:
+        id: remove
+        background_color: 1, 0, 0, 1
+        size_hint: 0.5, 0.1
+        pos_hint: {'x': 0.5, 'y': 0.9}
+        text: 'REMOVE'
+        on_press: root.remove_press()
+    Button:
+        id: run
+        background_color: 1, 0.2, 0.6, 1
+        size_hint: 0.5, 0.1
+        pos_hint: {'x': 0, 'y': 0}
+        text: 'RUN'
+        on_press: root.run_press()
+    Button:
+        id: mini
+        background_color: 1, 1, 0, 1
+        size_hint: 0.5, 0.1
+        pos_hint: {'x': 0.5, 'y': 0}
+        text: 'SWITCH'
+        on_press: root.mini_press()
+
+
+<HelpLabel@AlignedLabel>:
+    canvas.before:
+        Color:
+            rgba: 0.5, 0.5, 0.5, 0.5
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    text: 'Help message will appear here.'
+
+
+<MiniPanel@FloatLayout>:
+    canvas.before:
+        Color:
+            rgba: 0.9, 0.7, 0.1, 0.8
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+
+<MainScreenLayout@FloatLayout>:
+    MainPanel:
+        id: mp
+        size_hint: 0.75, 0.9
+        pos_hint: {'x': 0, 'y': 0.1}
+    RightPanel:
+        id: rp
+        size_hint: 0.25, 0.6
+        pos_hint: {'x': 0.75, 'y': 0.4}
+    HelpLabel:
+        id: hl
+        size_hint: 0.75, 0.1
+        pos_hint: {'x': 0, 'y': 0}
+    MiniPanel:
+        id: mnp
+        size_hint: 0.25, 0.4
+        pos_hint: {'x': 0.75, 'y': 0}
