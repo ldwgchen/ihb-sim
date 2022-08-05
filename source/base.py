@@ -1,4 +1,4 @@
-from utils import analyze_key_tuple_str
+from utils import analyze_key_tuple_str, is_inclusive_numeric
 
 
 class Tree:
@@ -77,10 +77,7 @@ class Session:
                 return False
             key_tuple_str = nouns[0]
             value_str = nouns[1]
-            test_value_str = value_str
-            if test_value_str[0] == '-':
-                test_value_str = test_value_str[1:]
-            if key_tuple_str[0] != '(' or key_tuple_str[-1] != ')' or not test_value_str.isnumeric():
+            if key_tuple_str[0] != '(' or key_tuple_str[-1] != ')' or not is_inclusive_numeric(value_str):
                 return False
             key_tuple = analyze_key_tuple_str(key_tuple_str)
             value = int(value_str)
@@ -137,3 +134,7 @@ class Session:
             self.state[tired] = 0
         for actionable in actions.keys():
             self.state[actionable] += actions[actionable]
+
+    def insert(self, insert_dict):
+        for name in insert_dict.keys():
+            self.state[name] = insert_dict[name]

@@ -39,3 +39,11 @@ def key_tuple_to_str(key_tuple: tuple) -> str:
     key_str = key_str.replace(' ', '')
     key_str = key_str.replace('\'', '')
     return key_str
+
+def is_inclusive_numeric(test_str: str) -> bool:
+    if test_str[0] == '-':
+        if len(test_str) >= 2:
+            test_str = test_str[1:]
+        else:
+            return False
+    return test_str.isnumeric()

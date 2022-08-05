@@ -17,6 +17,8 @@ from math import sqrt
 
 mode = 'normal'
 switch = 'description'
+insertion_script = {}
+round = 0
 
 
 class Node(Label):
@@ -122,7 +124,6 @@ class MainPanel(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.focus = ''
-        self.round = 0
         self.run_event = None
         self.cache = {}
         self.mode_value_dict = {'plus_one': 1, 'plus_two': 2, 'minus_one': -1, 'minus_two': -2}
@@ -226,8 +227,11 @@ class MainPanel(FloatLayout):
                 return id_str
             id_number += 1
 
-    def get_nodes(self) -> list:
-        return [child for child in self.children if isinstance(child, Node)]
+    def get_nodes(self, name_only = False) -> list:
+        if name_only == False:
+            return [child for child in self.children if isinstance(child, Node)]
+        else:
+            return self.session.get_names()
 
     def get_arrows(self) -> list:
         return [child for child in self.children if isinstance(child, Arrow)]
@@ -243,14 +247,21 @@ class MainPanel(FloatLayout):
                 node.text = str(self.session.state[name])
 
     def exe_round(self):
+        global insertion_script
+        global round
         set_label = self.parent.ids['mnp'].set_label
-        set_label(f'Executing Round <{self.round}> ...')
+        set_label(f'Executing Round <{round}> ...')
         self.session.restore()
         self.session.fire()
+        if round in insertion_script.keys():
+            insertion = insertion_script[round]
+            self.session.insert(insertion)
+            print(insertion)
         self.correct_scores()
-        self.round += 1
+        round += 1
 
     def toggle_run(self):
+        global round
         set_label = self.parent.ids['mnp'].set_label
         if self.run_event is None:
             self.run_event = Clock.schedule_interval(lambda dt: self.exe_round(), 3)
@@ -260,7 +271,7 @@ class MainPanel(FloatLayout):
             self.run_event.cancel()
             set_label('<session run stopped>')
             self.run_event = None
-            self.round = 0
+            round = 0
             self.parent.ids['rp'].ids['run'].text = 'RUN'
 
     def clear_modal(self, exempt: str = None):
@@ -447,6 +458,8 @@ class MiniPanel(FloatLayout):
         self.label.text = text
 
     def run_interpret(self):
+        global insertion_script
+        insertion_script.clear()
         block = self.textbox.text
         lines = block.splitlines()
         line_feedback = []
@@ -457,19 +470,43 @@ class MiniPanel(FloatLayout):
         self.textbox.text = '\n'.join(lines)
 
     def cmd_porter(self, cmd: str) -> bool:
+        global insertion_script
         modify_tree_verbs = ['create', 'update', 'remove']
         tokens = cmd.split()
         if len(tokens) == 0:
             return False
         verb = tokens[0]
-        success = False
         if verb in modify_tree_verbs:
             success = self.parent.ids['mp'].session.modify_tree(cmd)
             self.parent.ids['mp'].correct_nodes()
+            return success
         elif verb == 'nuke':
             self.parent.ids['mp'].nuke()
-            success = True
-        return success
+            return True
+        elif verb == 'at':
+            if len(tokens) != 5:
+                return False
+            if tokens[1].isnumeric() is False or tokens[3] != 'be':
+                return False
+            names = self.parent.ids['mp'].get_nodes(name_only=True)
+            targets = tokens[2].split(',')
+            if False in [target in names for target in targets]:
+                return False
+            values = tokens[4].split(',')
+            if False in [is_inclusive_numeric(value) for value in values]:
+                return False
+            else:
+                values = [int(value) for value in values]
+            if len(values) == 1:
+                value = values[0]
+                insertion = {target: value for target in targets}
+            elif len(targets) == len(values):
+                insertion = {target: values[i] for i, target in enumerate(targets)}
+            else:
+                return False
+            insertion_script[int(tokens[1])] = insertion
+            return True
+        return False
 
     def switch(self):
         global switch
